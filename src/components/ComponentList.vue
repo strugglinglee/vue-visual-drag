@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import componentList from "@/custom-component/component-list";
 const handleDragStart = (e: any) => {
-  console.log(e);
-  //   e.dataTransfer.setData("index", e.target.dataset.index);
+  e.dataTransfer.setData("index", e.target.dataset.index);
 };
 </script>
 
@@ -12,7 +11,7 @@ const handleDragStart = (e: any) => {
       v-for="(item, index) in componentList"
       :key="index"
       class="list"
-      draggable
+      draggable="true"
       :data-index="index"
     >
       <span class="iconfont" :class="'icon-' + item.icon"></span>

@@ -9,6 +9,8 @@ const handleDrop = (e: any) => {
   e.stopPropagation();
 
   const index = e.dataTransfer.getData("index");
+
+  console.log(index);
   // const rectInfo = this.editor.getBoundingClientRect();
   if (index) {
     const component = deepCopy(componentList[index]);
