@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { ref } from "vue";
 // import ToolBar from "@/components/ToolBar.vue";
 import ComponentList from "@/components/ComponentList.vue";
 import componentList from "@/custom-component/component-list"; // 左侧列表数据
 import { deepCopy } from "@/utils/utils";
+import Editor from "@/components/Editor/Index.vue";
+
+const editorRef = ref<HTMLElement | null>(null);
 
 const handleDrop = (e: any) => {
   e.preventDefault();
@@ -14,6 +18,7 @@ const handleDrop = (e: any) => {
   // const rectInfo = this.editor.getBoundingClientRect();
   if (index) {
     const component = deepCopy(componentList[index]);
+    console.log(editorRef.value);
     // component.style.top = e.clientY - rectInfo.y;
     // component.style.left = e.clientX - rectInfo.x;
     // component.id = generateID();
@@ -62,7 +67,7 @@ const deselectCurComponent = (e: any) => {
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor />
+          <Editor ref="editorRef" />
         </div>
       </section>
     </main>

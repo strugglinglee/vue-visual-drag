@@ -18,4 +18,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
   },
+  rules: {
+    // 解决组件命名
+    "vue/multi-word-component-names": "off",
+  },
 };
