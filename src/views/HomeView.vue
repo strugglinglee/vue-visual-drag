@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { ref } from "vue";
 // import ToolBar from "@/components/ToolBar.vue";
 import ComponentList from "@/components/ComponentList.vue";
 import componentList from "@/custom-component/component-list"; // 左侧列表数据
 import { deepCopy } from "@/utils/utils";
 import Editor from "@/components/Editor/Index.vue";
+import { useComposeStore } from "@/stores/compose";
+import { useMainStore } from "@/stores/main";
+import generateID from "@/utils/generateID";
 
-const editorRef = ref<HTMLElement | null>(null);
-
+const composeStore = useComposeStore();
+const mainStore = useMainStore();
 const handleDrop = (e: any) => {
   e.preventDefault();
   e.stopPropagation();
 
   const index = e.dataTransfer.getData("index");
-
-  console.log(index);
-  // const rectInfo = this.editor.getBoundingClientRect();
+  const rectInfo = composeStore.editor.getBoundingClientRect();
   if (index) {
     const component = deepCopy(componentList[index]);
-    console.log(editorRef.value);
-    // component.style.top = e.clientY - rectInfo.y;
-    // component.style.left = e.clientX - rectInfo.x;
-    // component.id = generateID();
+    component.style.top = e.clientY - rectInfo.y;
+    component.style.left = e.clientX - rectInfo.x;
+    component.id = generateID();
     // 根据画面比例修改组件样式比例 https://github.com/woai3c/visual-drag-demo/issues/91
     // changeComponentSizeWithScale(component);
-    // this.$store.commit("addComponent", { component });
+    mainStore.addComponent({ component });
+    console.log(mainStore.componentData[0], "hihihi");
     // this.$store.commit("recordSnapshot");
   }
 };
@@ -67,7 +67,7 @@ const deselectCurComponent = (e: any) => {
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor ref="editorRef" />
+          <Editor />
         </div>
       </section>
     </main>

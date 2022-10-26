@@ -18,5 +18,13 @@ export const useMainStore = defineStore("main", () => {
   // function increment() {
   //   count.value++;
   // }
-  return { canvasStyleData, componentData, curComponent };
+
+  const addComponent = ({ component, index }) => {
+    if (index !== undefined) {
+      componentData.value.splice(index, 0, component);
+    } else {
+      componentData.value.push(component);
+    }
+  };
+  return { canvasStyleData, componentData, curComponent, addComponent };
 });

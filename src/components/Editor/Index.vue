@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/main";
+import { useComposeStore } from "@/stores/compose";
+import { $ } from "@/utils/utils";
 import Grid from "./Grid.vue";
+import VText from "@/custom-component/VText/Component.vue";
 import {
   //   getStyle,
   //   getComponentRotatedStyle,
@@ -9,12 +12,17 @@ import {
   getCanvasStyle,
 } from "@/utils/style";
 import { changeStyleWithScale } from "@/utils/translate";
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
+
+const COMPONENTS = {
+  VText,
+};
 
 defineProps({
   isEdit: Boolean,
 });
-const { canvasStyleData } = useMainStore();
+const mainStore = useMainStore();
+const composeStore = useComposeStore();
 const state = reactive({
   editorX: 0,
   editorY: 0,
@@ -27,6 +35,12 @@ const state = reactive({
   height: 0,
   isShowArea: false,
   svgFilterAttrs: ["width", "height", "top", "left", "rotate"],
+});
+
+onMounted(() => {
+  composeStore.$patch({
+    editor: $("#editor"),
+  });
 });
 
 const handleContextMenu = (e: any) => {
@@ -162,14 +176,25 @@ const createGroup = () => {
     class="editor"
     :class="{ edit: isEdit }"
     :style="{
-      ...getCanvasStyle(canvasStyleData),
-      width: changeStyleWithScale(canvasStyleData.width) + 'px',
-      height: changeStyleWithScale(canvasStyleData.height) + 'px',
+      ...getCanvasStyle(mainStore.canvasStyleData),
+      width: changeStyleWithScale(mainStore.canvasStyleData.width) + 'px',
+      height: changeStyleWithScale(mainStore.canvasStyleData.height) + 'px',
     }"
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
     <Grid />
+    <div v-for="item in mainStore.componentData">
+      <component
+        :is="COMPONENTS[item.component]"
+        :id="'component' + item.id"
+        class="component"
+        :style="item.style"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+      />
+    </div>
   </div>
 </template>
