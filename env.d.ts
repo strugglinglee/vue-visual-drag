@@ -30,3 +30,7 @@ declare interface CanvasStyle {
   background: string;
   fontSize: number;
 }
+
+declare interface AnyType {
+  [propName: string]: any;
+}

@@ -24,7 +24,21 @@ const handleDrop = (e: any) => {
     // 根据画面比例修改组件样式比例 https://github.com/woai3c/visual-drag-demo/issues/91
     // changeComponentSizeWithScale(component);
     mainStore.addComponent({ component });
-    console.log(mainStore.componentData[0], "hihihi");
+    console.log(
+      "e.clientY",
+      e.clientY,
+      "rectInfo.y",
+      rectInfo.y,
+      "e.clientX",
+      e.clientX,
+      "rectInfo.x",
+      rectInfo.x,
+      "com",
+      e.clientY - rectInfo.y,
+      component.style.top,
+      component.style.left,
+      e.clientX - rectInfo.x
+    );
     // this.$store.commit("recordSnapshot");
   }
 };

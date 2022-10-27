@@ -12,7 +12,7 @@ export const useMainStore = defineStore("main", () => {
     background: "#fff",
     fontSize: 14,
   });
-  const componentData = ref([]); // 画布组件数据
+  const componentData = ref<AnyType[]>([]); // 画布组件数据
 
   const curComponent = ref(null);
   // function increment() {

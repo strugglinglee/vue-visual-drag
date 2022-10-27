@@ -1,6 +1,27 @@
 import { sin, cos, toPercent } from "@/utils/translate";
 import type { CSSProperties } from "vue";
 
+const needUnit = [
+  "fontSize",
+  "width",
+  "height",
+  "top",
+  "left",
+  "borderWidth",
+  "letterSpacing",
+  "borderRadius",
+];
+
+const getCssValueByKey = (key: string, value: unknown) => {
+  if (key === "rotate") {
+    return `${key}(${value})deg`;
+  }
+  if (needUnit.includes(key)) {
+    return `${value}px`;
+  }
+  return value;
+};
+
 export function getShapeStyle(style: CSSProperties) {
   const result: CSSProperties = {};
   ["width", "height", "top", "left", "rotate"].forEach((attr: any) => {
@@ -14,16 +35,17 @@ export function getShapeStyle(style: CSSProperties) {
   return result;
 }
 
-const needUnit = [
-  "fontSize",
-  "width",
-  "height",
-  "top",
-  "left",
-  "borderWidth",
-  "letterSpacing",
-  "borderRadius",
-];
+export const getStyle = (style: CSSProperties, filterKeys: string[]) => {
+  const filterKeyMap = filterKeys.reduce((pre, current) => {
+    return { ...pre, [current]: true };
+  }, {});
+  const res = Object.entries(style).reduce((pre, [key, value]) => {
+    return filterKeyMap[key]
+      ? pre
+      : { ...pre, [key]: getCssValueByKey(key, value) };
+  }, {});
+  return res;
+};
 
 export function getSVGStyle(style: CSSProperties, filter = [] as string[]) {
   const result: CSSProperties = {};
@@ -60,26 +82,25 @@ export function getSVGStyle(style: CSSProperties, filter = [] as string[]) {
   return result;
 }
 
-export function getStyle(style: any, filter = [] as string[]) {
-  const result: any = {};
-  Object.keys(style).forEach((key) => {
-    if (!filter.includes(key)) {
-      if (key != "rotate") {
-        if (style[key] !== "") {
-          result[key] = style[key];
+// export function getStyle(style: any, filter = [] as string[]) {
+//   const result: any = {};
+//   Object.keys(style).forEach((key) => {
+//     if (!filter.includes(key)) {
+//       if (key != "rotate") {
+//         if (style[key] !== "") {
+//           result[key] = style[key];
 
-          if (needUnit.includes(key)) {
-            result[key] += "px";
-          }
-        }
-      } else {
-        result.transform = key + "(" + style[key] + "deg)";
-      }
-    }
-  });
-
-  return result;
-}
+//           if (needUnit.includes(key)) {
+//             result[key] += "px";
+//           }
+//         }
+//       } else {
+//         result.transform = key + "(" + style[key] + "deg)";
+//       }
+//     }
+//   });
+//   return result;
+// }
 
 // 获取一个组件旋转 rotate 后的样式
 export function getComponentRotatedStyle(style: any) {

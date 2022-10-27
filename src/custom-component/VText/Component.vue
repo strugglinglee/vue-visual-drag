@@ -13,7 +13,6 @@ const props = defineProps({
   <div class="item" :style="style">
     <input />
   </div>
-  {{ style }}
 </template>
 
 <style lang="scss" scoped>
