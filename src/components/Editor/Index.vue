@@ -62,6 +62,7 @@ const getComponentStyle = (style: CSSProperties) => {
       :index="index"
       :active="item.id === (mainStore.curComponent || {}).id"
       :style="getShapeStyle(item.style)"
+      :defaultStyle="item.style"
     >
       <component
         :is="COMPONENTS[item.component]"

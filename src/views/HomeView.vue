@@ -49,7 +49,6 @@ const handleDragOver = (e: any) => {
 };
 
 const handleMouseDown = (e: any) => {
-  console.log("canvas mouse down", e);
   mainStore.$patch({
     isInCurComponentArea: false,
   });
@@ -63,7 +62,6 @@ const deselectCurComponent = (e: any) => {
       curComponentIndex: null,
     });
   }
-  console.log(e);
 };
 </script>
 

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/main";
-import { computed } from "vue";
+import { computed, type CSSProperties } from "vue";
 const props = defineProps<{
   active: boolean;
   element: Record<string, any>;
   index: number;
+  defaultStyle: CSSProperties;
 }>();
 const mainStore = useMainStore();
 const NORMAL_POINT_DIRECTION = ["lt", "rt", "lb", "rb", "l", "r", "t", "b"];
@@ -36,14 +37,36 @@ const isActive = computed(() => {
 });
 
 const setCurComponent = () => {};
-const handleMouseDownOnShape = (e: Event) => {
+const handleMouseDownOnShape = (e: any) => {
   mainStore.$patch({
     curComponent: props.element,
     curComponentIndex: props.index,
     isInCurComponentArea: true,
+    isInEditor: true,
   });
   e.stopPropagation();
+  const curStyle = { ...props.defaultStyle };
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const startLeft = Number(curStyle.left);
+  const startTop = Number(curStyle.top);
+
+  const move = (mouseEvent: any) => {
+    const endX = mouseEvent.clientX;
+    const endY = mouseEvent.clientY;
+    curStyle.left = endX - startX + startLeft;
+    curStyle.top = endY - startY + startTop;
+    mainStore.setShapeStyle(curStyle);
+  };
+  const up = () => {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+  };
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
 };
+
+const handleRotate = () => {};
 </script>
 
 <template>
@@ -60,6 +83,12 @@ const handleMouseDownOnShape = (e: Event) => {
       :style="getShapeStyle(item)"
       :key="item"
     ></div>
+    <!-- 旋转标识 -->
+    <span
+      v-show="isActive"
+      class="iconfont icon-xiangyouxuanzhuan"
+      @mousedown="handleRotate"
+    ></span>
   </div>
 </template>
 
@@ -87,5 +116,20 @@ const handleMouseDownOnShape = (e: Event) => {
   z-index: 1;
   margin-left: -4px;
   margin-top: -4px;
+}
+
+.icon-xiangyouxuanzhuan {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: grab;
+  color: #59c7f9;
+  font-size: 20px;
+  font-weight: 600;
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 </style>

@@ -19,14 +19,24 @@ export const useMainStore = defineStore("main", () => {
   const curComponentIndex = ref<number | null>(null);
 
   const isInCurComponentArea = ref<boolean>(false);
+  const isInEditor = ref<boolean>(false);
 
-  const addComponent = ({ component, index }) => {
+  const addComponent = ({ component, index }: any) => {
     if (index !== undefined) {
       componentData.value.splice(index, 0, component);
     } else {
       componentData.value.push(component);
     }
   };
+
+  const setShapeStyle = ({ top, left, width, height, rotate }: any) => {
+    if (top) (curComponent.value as any).style.top = Math.round(top);
+    if (left) (curComponent.value as any).style.left = Math.round(left);
+    if (width) (curComponent.value as any).style.width = Math.round(width);
+    if (height) (curComponent.value as any).style.height = Math.round(height);
+    if (rotate) (curComponent.value as any).style.rotate = Math.round(rotate);
+  };
+
   return {
     canvasStyleData,
     componentData,
@@ -34,5 +44,7 @@ export const useMainStore = defineStore("main", () => {
     addComponent,
     curComponentIndex,
     isInCurComponentArea,
+    isInEditor,
+    setShapeStyle,
   };
 });
