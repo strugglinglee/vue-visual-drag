@@ -1,6 +1,4 @@
-import Vue from "vue";
-
-const components = [
+export const components = [
   "CircleShape",
   "Picture",
   "VText",

@@ -49,19 +49,21 @@ const handleDragOver = (e: any) => {
 };
 
 const handleMouseDown = (e: any) => {
-  e.stopPropagation();
-  // this.$store.commit("setClickComponentStatus", false);
+  console.log("canvas mouse down", e);
+  mainStore.$patch({
+    isInCurComponentArea: false,
+  });
   // this.$store.commit("setInEditorStatus", true);
 };
 
 const deselectCurComponent = (e: any) => {
-  // if (!this.isClickComponent) {
-  //   this.$store.commit("setCurComponent", { component: null, index: null });
-  // }
-  // // 0 左击 1 滚轮 2 右击
-  // if (e.button != 2) {
-  //   this.$store.commit("hideContextMenu");
-  // }
+  if (!mainStore.isInCurComponentArea) {
+    mainStore.$patch({
+      curComponent: null,
+      curComponentIndex: null,
+    });
+  }
+  console.log(e);
 };
 </script>
 
@@ -78,7 +80,7 @@ const deselectCurComponent = (e: any) => {
           class="content"
           @drop="handleDrop"
           @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
+          @mousedown.stop="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
           <Editor />

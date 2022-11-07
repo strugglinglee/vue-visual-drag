@@ -56,8 +56,11 @@ const getComponentStyle = (style: CSSProperties) => {
     <!-- 网格线 -->
     <Grid />
     <Shape
-      v-for="item in mainStore.componentData"
+      v-for="(item, index) in mainStore.componentData"
       :key="item.id"
+      :element="item"
+      :index="index"
+      :active="item.id === (mainStore.curComponent || {}).id"
       :style="getShapeStyle(item.style)"
     >
       <component
@@ -66,7 +69,6 @@ const getComponentStyle = (style: CSSProperties) => {
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
-        :element="item"
         :request="item.request"
       />
     </Shape>

@@ -12,12 +12,13 @@ export const useMainStore = defineStore("main", () => {
     background: "#fff",
     fontSize: 14,
   });
-  const componentData = ref<AnyType[]>([]); // 画布组件数据
+  const componentData = ref<Record<string, any>[]>([]); // 画布组件数据
 
-  const curComponent = ref(null);
-  // function increment() {
-  //   count.value++;
-  // }
+  // 目前正在操作的组件信息
+  const curComponent = ref<Record<string, any> | null>(null);
+  const curComponentIndex = ref<number | null>(null);
+
+  const isInCurComponentArea = ref<boolean>(false);
 
   const addComponent = ({ component, index }) => {
     if (index !== undefined) {
@@ -26,5 +27,12 @@ export const useMainStore = defineStore("main", () => {
       componentData.value.push(component);
     }
   };
-  return { canvasStyleData, componentData, curComponent, addComponent };
+  return {
+    canvasStyleData,
+    componentData,
+    curComponent,
+    addComponent,
+    curComponentIndex,
+    isInCurComponentArea,
+  };
 });
