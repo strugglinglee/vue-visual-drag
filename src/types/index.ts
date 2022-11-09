@@ -1,8 +1,8 @@
 export interface ComponentStyle {
   width: number;
   height: number;
-  left?: number;
-  top?: number;
+  left: number;
+  top: number;
   [props: string]: any;
 }
 export interface ComponentInfo {

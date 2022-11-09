@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/main";
+import { useComposeStore } from "@/stores/compose";
 import { computed } from "vue";
 import type { ComponentStyle } from "@/types/index";
+import { type ShapePonitType, InitialAngle } from "@/types/shape";
+import { mod360 } from "@/utils/translate";
+import { NORMAL_POINT_DIRECTION, ANGLE_TO_CURSOR } from "@/constant/shape";
+import calculateComponentPositonAndSize from "@/utils/calculateComponentPositonAndSize";
 
 const props = defineProps<{
   active: boolean;
@@ -10,7 +15,7 @@ const props = defineProps<{
   defaultStyle: ComponentStyle;
 }>();
 const mainStore = useMainStore();
-const NORMAL_POINT_DIRECTION = ["lt", "rt", "lb", "rb", "l", "r", "t", "b"];
+const composeStore = useComposeStore();
 
 // 获取八个点的坐标 只用top/right来定位
 const getShapeStyle = (direction: string) => {
@@ -20,13 +25,13 @@ const getShapeStyle = (direction: string) => {
   const hasBottom = /b/.test(direction);
   const hasTop = /t/.test(direction);
   const hasLeft = /l/.test(direction);
-  hasRight && (left = props.element.style.width);
-  hasBottom && (top = props.element.style.height);
+  hasRight && (left = props.defaultStyle.width);
+  hasBottom && (top = props.defaultStyle.height);
   if (direction.length === 1) {
-    hasLeft && (top = props.element.style.height / 2);
-    hasRight && (top = props.element.style.height / 2);
-    hasTop && (left = props.element.style.width / 2);
-    hasBottom && (left = props.element.style.width / 2);
+    hasLeft && (top = props.defaultStyle.height / 2);
+    hasRight && (top = props.defaultStyle.height / 2);
+    hasTop && (left = props.defaultStyle.width / 2);
+    hasBottom && (left = props.defaultStyle.width / 2);
   }
   return {
     left: `${left}px`,
@@ -72,9 +77,105 @@ const handleRotate = () => {};
 
 // 点击小圆点事件
 const handleMouseDownOnPoint = (point: any, e: any) => {
+  mainStore.$patch({
+    isInCurComponentArea: true,
+    isInEditor: true,
+  });
+  e.stopPropagation();
+  e.preventDefault();
   const style = { ...props.defaultStyle };
+  // 组件宽高比
   const componentRatio = style.width / style.height;
-  console.log(componentRatio, point, e);
+  // 组件中心点
+  const center = {
+    x: style.left + style.width / 2,
+    y: style.top + style.height / 2,
+  };
+
+  const editorRectInfo = (
+    composeStore.editor as HTMLBaseElement
+  ).getBoundingClientRect();
+  const pointRect = e.target.getBoundingClientRect();
+
+  // 当前点击圆点相对于画布的中心坐标
+  const curPoint = {
+    x: Math.round(
+      pointRect.left - editorRectInfo.left + e.target.offsetWidth / 2
+    ),
+    y: Math.round(
+      pointRect.top - editorRectInfo.top + e.target.offsetHeight / 2
+    ),
+  };
+
+  // 获取对称点的坐标
+  const symmetricPoint = {
+    x: center.x - (curPoint.x - center.x),
+    y: center.y - (curPoint.y - center.y),
+  };
+  let isFirst = true;
+  const move = (moveEvent: MouseEvent) => {
+    // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
+    // 因此第一次点击时不触发 move 事件
+    if (isFirst) return (isFirst = false);
+    const curPositon = {
+      x: moveEvent.clientX - Math.round(editorRectInfo.left),
+      y: moveEvent.clientY - Math.round(editorRectInfo.top),
+    };
+
+    calculateComponentPositonAndSize(
+      point,
+      style,
+      curPositon,
+      componentRatio,
+      false,
+      {
+        center,
+        curPoint,
+        symmetricPoint,
+      }
+    );
+    mainStore.setShapeStyle(style);
+  };
+
+  const up = () => {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+  };
+
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
+};
+const getCursor = () => {
+  const { curComponent } = mainStore;
+  const curComponentRotate = Number(
+    (curComponent as HTMLBaseElement).style.rotate
+  );
+  const rotate = mod360(curComponentRotate); // 取余 360
+  const result: any = {};
+  let lastMatchIndex = -1; // 从上一个命中的角度的索引开始匹配下一个，降低时间复杂度
+
+  NORMAL_POINT_DIRECTION.forEach((point: ShapePonitType) => {
+    const angle = mod360(InitialAngle[point] + rotate);
+    const len = ANGLE_TO_CURSOR.length;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      lastMatchIndex = (lastMatchIndex + 1) % len;
+      const angleLimit = ANGLE_TO_CURSOR[lastMatchIndex];
+      if (angle < 23 || angle >= 338) {
+        result[point] = "nw-resize";
+
+        return;
+      }
+
+      if (angleLimit.start <= angle && angle < angleLimit.end) {
+        result[point] = angleLimit.cursor + "-resize";
+
+        return;
+      }
+    }
+  });
+
+  return result;
 };
 </script>
 
