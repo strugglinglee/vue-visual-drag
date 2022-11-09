@@ -110,8 +110,8 @@ const handleMouseDownOnPoint = (point: any, e: any) => {
 
   // 获取对称点的坐标
   const symmetricPoint = {
-    x: center.x - (curPoint.x - center.x),
-    y: center.y - (curPoint.y - center.y),
+    x: center.x + (center.x - curPoint.x),
+    y: center.y + (center.y - curPoint.y),
   };
   let isFirst = true;
   const move = (moveEvent: MouseEvent) => {

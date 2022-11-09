@@ -4,13 +4,29 @@ import { calculateRotatedPointCoordinate, getCenterPoint } from "./translate";
 const funcs = {
   l: calculateLeft,
   //   lt: calculateLeftTop,
-  //   t: calculateTop,
+  t: calculateTop,
   //   rt: calculateRightTop,
-  //   r: calculateRight,
+  r: calculateRight,
   //   rb: calculateRightBottom,
   //   b: calculateBottom,
   //   lb: calculateLeftBottom
 };
+function calculateTop(
+  style: Record<string, any>,
+  curPositon: Point,
+  proportion: number,
+  needLockProportion: boolean,
+  pointInfo: Record<string, any>
+) {
+  const { symmetricPoint, curPoint } = pointInfo;
+  const rotatedTopMiddlePoint = {
+    x: curPoint.x,
+    y: curPositon.y,
+  };
+
+  style.height = style.height + style.top - rotatedTopMiddlePoint.y;
+  style.top = rotatedTopMiddlePoint.y;
+}
 
 function calculateLeft(
   style: Record<string, any>,
@@ -20,42 +36,60 @@ function calculateLeft(
   pointInfo: Record<string, any>
 ) {
   const { symmetricPoint, curPoint } = pointInfo;
-  const rotatedcurPositon = calculateRotatedPointCoordinate(
-    curPositon,
-    curPoint,
-    -style.rotate
-  );
-  const rotatedLeftMiddlePoint = calculateRotatedPointCoordinate(
-    {
-      x: rotatedcurPositon.x,
-      y: curPoint.y,
-    },
-    curPoint,
-    style.rotate
-  );
+  // const rotatedcurPositon = calculateRotatedPointCoordinate(
+  //   curPositon,
+  //   curPoint,
+  //   -style.rotate
+  // );
+  // const rotatedLeftMiddlePoint = calculateRotatedPointCoordinate(
+  //   {
+  //     x: rotatedcurPositon.x,
+  //     y: curPoint.y,
+  //   },
+  //   curPoint,
+  //   style.rotate
+  // );
+  // const rotatedcurPositon = {
+  //   x: curPositon.x,
+  //   y: curPositon.y,
+  // };
+  const rotatedLeftMiddlePoint = {
+    x: curPositon.x,
+    y: curPoint.y,
+  };
 
-  const newWidth = Math.sqrt(
-    (rotatedLeftMiddlePoint.x - symmetricPoint.x) ** 2 +
-      (rotatedLeftMiddlePoint.y - symmetricPoint.y) ** 2
-  );
+  const newWidth = symmetricPoint.x - rotatedLeftMiddlePoint.x;
 
   const newCenter = {
     x:
       rotatedLeftMiddlePoint.x -
       (rotatedLeftMiddlePoint.x - symmetricPoint.x) / 2,
-    y:
-      rotatedLeftMiddlePoint.y +
-      (symmetricPoint.y - rotatedLeftMiddlePoint.y) / 2,
+    y: rotatedLeftMiddlePoint.y,
+  };
+  style.width = Math.round(newWidth);
+  style.left = Math.round(newCenter.x - newWidth / 2);
+}
+
+function calculateRight(
+  style: Record<string, any>,
+  curPositon: Point,
+  proportion: number,
+  needLockProportion: boolean,
+  pointInfo: Record<string, any>
+) {
+  const { symmetricPoint, curPoint } = pointInfo;
+  const rotatedRightMiddlePoint = {
+    x: curPositon.x,
+    y: curPoint.y,
+  };
+  const newWidth = rotatedRightMiddlePoint.x - symmetricPoint.x;
+
+  const newCenter = {
+    x: rotatedRightMiddlePoint.x - newWidth / 2,
+    y: rotatedRightMiddlePoint.y,
   };
 
-  const height = style.height;
-  //   if (needLockProportion) {
-  //     height = newWidth / proportion;
-  //   }
-
-  style.height = height;
   style.width = Math.round(newWidth);
-  style.top = Math.round(newCenter.y - style.height / 2);
   style.left = Math.round(newCenter.x - newWidth / 2);
 }
 
