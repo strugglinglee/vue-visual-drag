@@ -35,12 +35,12 @@ export function getShapeStyle(style: CSSProperties) {
   return result;
 }
 
-export const getStyle = (style: CSSProperties, filterKeys: string[]) => {
+export const getStyle = (style: CSSProperties, filterKeys: string[] = []) => {
   const filterKeyMap = filterKeys.reduce((pre, current) => {
     return { ...pre, [current]: true };
   }, {});
   const res = Object.entries(style).reduce((pre, [key, value]) => {
-    return filterKeyMap[key]
+    return (filterKeyMap as any)[key]
       ? pre
       : { ...pre, [key]: getCssValueByKey(key, value) };
   }, {});

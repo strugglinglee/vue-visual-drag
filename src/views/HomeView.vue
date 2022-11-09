@@ -15,7 +15,9 @@ const handleDrop = (e: any) => {
   e.stopPropagation();
 
   const index = e.dataTransfer.getData("index");
-  const rectInfo = composeStore.editor.getBoundingClientRect();
+  const rectInfo = (
+    composeStore.editor as HTMLBaseElement
+  ).getBoundingClientRect();
   if (index) {
     const component = deepCopy(componentList[index]);
     component.style.top = e.clientY - rectInfo.y;
@@ -48,14 +50,14 @@ const handleDragOver = (e: any) => {
   e.dataTransfer.dropEffect = "copy";
 };
 
-const handleMouseDown = (e: any) => {
+const handleMouseDown = (e: MouseEvent) => {
   mainStore.$patch({
     isInCurComponentArea: false,
   });
   // this.$store.commit("setInEditorStatus", true);
 };
 
-const deselectCurComponent = (e: any) => {
+const deselectCurComponent = (e: Event) => {
   if (!mainStore.isInCurComponentArea) {
     mainStore.$patch({
       curComponent: null,
