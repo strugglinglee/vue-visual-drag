@@ -54,7 +54,6 @@ function calculateLeft(
   //   }
 
   style.height = height;
-  console.log(height);
   style.width = Math.round(newWidth);
   style.top = Math.round(newCenter.y - style.height / 2);
   style.left = Math.round(newCenter.x - newWidth / 2);

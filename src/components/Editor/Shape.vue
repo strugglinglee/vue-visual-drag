@@ -3,9 +3,9 @@ import { useMainStore } from "@/stores/main";
 import { useComposeStore } from "@/stores/compose";
 import { computed } from "vue";
 import type { ComponentStyle } from "@/types/index";
-import { type ShapePonitType, InitialAngle } from "@/types/shape";
-import { mod360 } from "@/utils/translate";
-import { NORMAL_POINT_DIRECTION, ANGLE_TO_CURSOR } from "@/constant/shape";
+import { ShapePointCursor, type ShapePonitType } from "@/types/shape";
+// import { mod360 } from "@/utils/translate";
+import { NORMAL_POINT_DIRECTION } from "@/constant/shape";
 import calculateComponentPositonAndSize from "@/utils/calculateComponentPositonAndSize";
 
 const props = defineProps<{
@@ -18,7 +18,7 @@ const mainStore = useMainStore();
 const composeStore = useComposeStore();
 
 // 获取八个点的坐标 只用top/right来定位
-const getShapeStyle = (direction: string) => {
+const getShapeStyle = (direction: ShapePonitType) => {
   let top = 0,
     left = 0;
   const hasRight = /r/.test(direction);
@@ -36,6 +36,7 @@ const getShapeStyle = (direction: string) => {
   return {
     left: `${left}px`,
     top: `${top}px`,
+    cursor: ShapePointCursor[direction],
   };
 };
 
@@ -144,38 +145,6 @@ const handleMouseDownOnPoint = (point: any, e: any) => {
 
   document.addEventListener("mousemove", move);
   document.addEventListener("mouseup", up);
-};
-const getCursor = () => {
-  const { curComponent } = mainStore;
-  const curComponentRotate = Number(
-    (curComponent as HTMLBaseElement).style.rotate
-  );
-  const rotate = mod360(curComponentRotate); // 取余 360
-  const result: any = {};
-  let lastMatchIndex = -1; // 从上一个命中的角度的索引开始匹配下一个，降低时间复杂度
-
-  NORMAL_POINT_DIRECTION.forEach((point: ShapePonitType) => {
-    const angle = mod360(InitialAngle[point] + rotate);
-    const len = ANGLE_TO_CURSOR.length;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      lastMatchIndex = (lastMatchIndex + 1) % len;
-      const angleLimit = ANGLE_TO_CURSOR[lastMatchIndex];
-      if (angle < 23 || angle >= 338) {
-        result[point] = "nw-resize";
-
-        return;
-      }
-
-      if (angleLimit.start <= angle && angle < angleLimit.end) {
-        result[point] = angleLimit.cursor + "-resize";
-
-        return;
-      }
-    }
-  });
-
-  return result;
 };
 </script>
 
