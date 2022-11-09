@@ -1,4 +1,5 @@
 import { useMainStore } from "@/stores/main";
+import type { Placement, Point } from "@/types";
 import { divide, multiply } from "mathjs";
 
 // 角度转弧度

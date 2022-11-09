@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/main";
-import { computed, type CSSProperties } from "vue";
+import { computed } from "vue";
+import type { ComponentStyle } from "@/types/index";
+
 const props = defineProps<{
   active: boolean;
   element: Record<string, any>;
   index: number;
-  defaultStyle: CSSProperties;
+  defaultStyle: ComponentStyle;
 }>();
 const mainStore = useMainStore();
 const NORMAL_POINT_DIRECTION = ["lt", "rt", "lb", "rb", "l", "r", "t", "b"];
@@ -67,6 +69,13 @@ const handleMouseDownOnShape = (e: any) => {
 };
 
 const handleRotate = () => {};
+
+// 点击小圆点事件
+const handleMouseDownOnPoint = (point: any, e: any) => {
+  const style = { ...props.defaultStyle };
+  const componentRatio = style.width / style.height;
+  console.log(componentRatio, point, e);
+};
 </script>
 
 <template>
@@ -82,6 +91,7 @@ const handleRotate = () => {};
       v-for="item in isActive ? NORMAL_POINT_DIRECTION : []"
       :style="getShapeStyle(item)"
       :key="item"
+      @mousedown="handleMouseDownOnPoint(item, $event)"
     ></div>
     <!-- 旋转标识 -->
     <span

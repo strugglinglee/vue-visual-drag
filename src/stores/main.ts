@@ -1,5 +1,6 @@
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
+import type { ComponentInfo } from "@/types/index";
 
 export const useMainStore = defineStore("main", () => {
   const canvasStyleData = reactive({
@@ -12,7 +13,7 @@ export const useMainStore = defineStore("main", () => {
     background: "#fff",
     fontSize: 14,
   });
-  const componentData = ref<Record<string, any>[]>([]); // 画布组件数据
+  const componentData = ref<ComponentInfo[]>([]); // 画布组件数据
 
   // 目前正在操作的组件信息
   const curComponent = ref<Record<string, any> | null>(null);

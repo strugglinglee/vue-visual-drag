@@ -65,7 +65,7 @@ const getComponentStyle = (style: CSSProperties) => {
       :defaultStyle="item.style"
     >
       <component
-        :is="COMPONENTS[item.component]"
+        :is="(COMPONENTS as any)[item.component]"
         :id="'component' + item.id"
         class="component"
         :style="getComponentStyle(item.style)"
