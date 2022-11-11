@@ -55,6 +55,12 @@ const getComponentStyle = (style: CSSProperties) => {
   >
     <!-- 网格线 -->
     <Grid />
+    <div
+      v-for="(item, index) in mainStore.testPoints"
+      :style="item"
+      :key="index"
+      class="test_point"
+    ></div>
     <Shape
       v-for="(item, index) in mainStore.componentData"
       :key="item.id"
@@ -77,6 +83,18 @@ const getComponentStyle = (style: CSSProperties) => {
 </template>
 
 <style lang="scss" scoped>
+.test_point {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: red;
+  z-index: 9999;
+  margin-left: -5px;
+  margin-top: -5px;
+}
 .editor {
   position: relative;
   background: #fff;

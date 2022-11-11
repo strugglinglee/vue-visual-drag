@@ -38,6 +38,8 @@ export const useMainStore = defineStore("main", () => {
     if (rotate) (curComponent.value as any).style.rotate = Math.round(rotate);
   };
 
+  const testPoints = ref<any[]>([]);
+
   return {
     canvasStyleData,
     componentData,
@@ -47,5 +49,6 @@ export const useMainStore = defineStore("main", () => {
     isInCurComponentArea,
     isInEditor,
     setShapeStyle,
+    testPoints,
   };
 });

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useMainStore } from "@/stores/main";
 import { useComposeStore } from "@/stores/compose";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type { ComponentStyle } from "@/types/index";
 import { ShapePointCursor, type ShapePonitType } from "@/types/shape";
 // import { mod360 } from "@/utils/translate";
 import { NORMAL_POINT_DIRECTION } from "@/constant/shape";
 import calculateComponentPositonAndSize from "@/utils/calculateComponentPositonAndSize";
+
+let currentEl = ref(null);
 
 const props = defineProps<{
   active: boolean;
@@ -74,10 +76,47 @@ const handleMouseDownOnShape = (e: any) => {
   document.addEventListener("mouseup", up);
 };
 
-const handleRotate = () => {};
+const handleRotate = (e: MouseEvent) => {
+  mainStore.$patch({
+    isInCurComponentArea: true,
+  });
+  e.preventDefault();
+  e.stopPropagation();
+  // 初始坐标和初始角度
+  const pos = { ...props.defaultStyle };
+  const startY = e.clientY;
+  const startX = e.clientX;
+  const startRotate = pos.rotate;
+  // // 获取元素中心点位置
+  const rect = (currentEl as any).value.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  // 旋转前的角度
+  const rotateDegreeBefore =
+    Math.atan2(centerY - startY, centerX - startX) / (Math.PI / 180);
+  const move = (moveEvent: MouseEvent) => {
+    const curX = moveEvent.clientX;
+    const curY = moveEvent.clientY;
+    // 旋转后的角度
+    const rotateDegreeAfter =
+      Math.atan2(centerY - curY, centerX - curX) / (Math.PI / 180);
+    pos.rotate = startRotate + rotateDegreeAfter - rotateDegreeBefore;
+    // 修改当前组件样式
+    mainStore.setShapeStyle(pos);
+  };
+
+  const up = () => {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+  };
+
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
+};
 
 // 点击小圆点事件
-const handleMouseDownOnPoint = (point: any, e: any) => {
+const handleMouseDownOnPoint = (direction: any, e: any) => {
   mainStore.$patch({
     isInCurComponentArea: true,
     isInEditor: true,
@@ -88,7 +127,7 @@ const handleMouseDownOnPoint = (point: any, e: any) => {
   // 组件宽高比
   const componentRatio = style.width / style.height;
   // 组件中心点
-  const center = {
+  const centerPoint = {
     x: style.left + style.width / 2,
     y: style.top + style.height / 2,
   };
@@ -110,8 +149,8 @@ const handleMouseDownOnPoint = (point: any, e: any) => {
 
   // 获取对称点的坐标
   const symmetricPoint = {
-    x: center.x + (center.x - curPoint.x),
-    y: center.y + (center.y - curPoint.y),
+    x: centerPoint.x + (centerPoint.x - curPoint.x),
+    y: centerPoint.y + (centerPoint.y - curPoint.y),
   };
   let isFirst = true;
   const move = (moveEvent: MouseEvent) => {
@@ -119,18 +158,19 @@ const handleMouseDownOnPoint = (point: any, e: any) => {
     // 因此第一次点击时不触发 move 事件
     if (isFirst) return (isFirst = false);
     const curPositon = {
+      // moveEvent.clientX 鼠标指针在点击元素（DOM）中的 X 坐标。
       x: moveEvent.clientX - Math.round(editorRectInfo.left),
       y: moveEvent.clientY - Math.round(editorRectInfo.top),
     };
 
     calculateComponentPositonAndSize(
-      point,
+      direction,
       style,
       curPositon,
       componentRatio,
       false,
       {
-        center,
+        center: centerPoint,
         curPoint,
         symmetricPoint,
       }
@@ -153,6 +193,7 @@ const handleMouseDownOnPoint = (point: any, e: any) => {
     :class="['shape', { active }]"
     @click="setCurComponent"
     @mousedown="handleMouseDownOnShape"
+    ref="currentEl"
   >
     <slot></slot>
     <!-- 八个操作点 -->

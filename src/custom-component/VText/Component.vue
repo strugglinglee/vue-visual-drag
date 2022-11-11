@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="item" :style="style">文字输入哈哈哈哈哈</div>
+  <div class="item" :style="style">文字输入</div>
 </template>
 
 <style lang="scss" scoped>
