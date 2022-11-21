@@ -4,6 +4,8 @@ import { useComposeStore } from "@/stores/compose";
 import { $ } from "@/utils/utils";
 import Grid from "./Grid.vue";
 import VText from "@/custom-component/VText/Component.vue";
+import VButton from "@/custom-component/VButton/Component.vue";
+import Picture from "@/custom-component/Picture/Component.vue";
 import Shape from "./Shape.vue";
 import { getShapeStyle, getStyle, getCanvasStyle } from "@/utils/style";
 import { onMounted, reactive, type CSSProperties } from "vue";
@@ -11,6 +13,8 @@ import { changeStyleWithScale } from "@/utils/translate";
 
 const COMPONENTS = {
   VText,
+  VButton,
+  Picture,
 };
 
 defineProps({
@@ -91,6 +95,17 @@ const handleInput = (element: any, value: string) => {
       :defaultStyle="item.style"
     >
       <component
+        :is="(COMPONENTS as any)[item.component]"
+        v-if="item.component != 'VText'"
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+      />
+      <component
+        v-else
         :is="(COMPONENTS as any)[item.component]"
         :id="'component' + item.id"
         class="component"
