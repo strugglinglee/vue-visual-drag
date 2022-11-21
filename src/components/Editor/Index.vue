@@ -41,6 +41,26 @@ onMounted(() => {
 const getComponentStyle = (style: CSSProperties) => {
   return getStyle(style, state.svgFilterAttrs);
 };
+
+const getTextareaHeight = (element: any, text: string) => {
+  let { lineHeight, fontSize, height } = element.style;
+  if (lineHeight === "") {
+    lineHeight = 1.5;
+  }
+
+  const newHeight =
+    (text.split("<br>").length - 1) *
+    lineHeight *
+    (fontSize || mainStore.canvasStyleData.fontSize);
+  return height > newHeight ? height : newHeight;
+};
+
+const handleInput = (element: any, value: string) => {
+  // 根据文本组件高度调整 shape 高度
+  mainStore.setShapeStyle({
+    height: getTextareaHeight(element, value),
+  });
+};
 </script>
 
 <template>
@@ -77,6 +97,8 @@ const getComponentStyle = (style: CSSProperties) => {
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :request="item.request"
+        v-model:element="mainStore.componentData[index]"
+        @input="handleInput"
       />
     </Shape>
   </div>

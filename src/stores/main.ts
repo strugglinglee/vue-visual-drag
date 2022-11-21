@@ -40,7 +40,10 @@ export const useMainStore = defineStore("main", () => {
 
   const testPoints = ref<any[]>([]);
 
+  const editMode = ref<string>("edit"); // 编辑器模式 edit preview
+
   return {
+    editMode,
     canvasStyleData,
     componentData,
     curComponent,
