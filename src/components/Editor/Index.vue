@@ -6,6 +6,9 @@ import Grid from "./Grid.vue";
 import VText from "@/custom-component/VText/Component.vue";
 import VButton from "@/custom-component/VButton/Component.vue";
 import Picture from "@/custom-component/Picture/Component.vue";
+import RectShape from "@/custom-component/RectShape/Component.vue";
+import LineShape from "@/custom-component/LineShape/Component.vue";
+import CircleShape from "@/custom-component/CircleShape/Component.vue";
 import Shape from "./Shape.vue";
 import { getShapeStyle, getStyle, getCanvasStyle } from "@/utils/style";
 import { onMounted, reactive, type CSSProperties } from "vue";
@@ -15,6 +18,9 @@ const COMPONENTS = {
   VText,
   VButton,
   Picture,
+  RectShape,
+  LineShape,
+  CircleShape,
 };
 
 defineProps({

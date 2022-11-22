@@ -29,8 +29,7 @@ onMounted(() => {
 watch(props.element.style, () => {
   drawImage();
 });
-watch(props.propValue.flip, (value) => {
-  console.log(value);
+watch(props.propValue.flip, () => {
   mirrorFlip();
 });
 const drawImage = () => {
@@ -49,13 +48,11 @@ const drawImage = () => {
     mirrorFlip();
   }
 };
-
 const mirrorFlip = () => {
   const { vertical, horizontal } = props.propValue.flip;
   const { width, height } = props.element.style;
   const hvalue = horizontal ? -1 : 1;
   const vValue = vertical ? -1 : 1;
-
   // 清除图片
   state.ctx.clearRect(0, 0, width, height);
   // 平移图片
@@ -70,6 +67,7 @@ const mirrorFlip = () => {
   state.ctx.setTransform(1, 0, 0, 1, 0, 0);
 };
 </script>
+
 <template>
   <div style="overflow: hidden">
     <canvas ref="canvasRef"></canvas>
