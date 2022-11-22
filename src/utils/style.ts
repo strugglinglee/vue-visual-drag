@@ -78,7 +78,6 @@ export function getSVGStyle(style: CSSProperties, filter = [] as string[]) {
       }
     }
   });
-
   return result;
 }
 

@@ -5,12 +5,20 @@ import { $ } from "@/utils/utils";
 import Grid from "./Grid.vue";
 import VText from "@/custom-component/VText/Component.vue";
 import VButton from "@/custom-component/VButton/Component.vue";
+import VTable from "@/custom-component/VTable/Component.vue";
 import Picture from "@/custom-component/Picture/Component.vue";
 import RectShape from "@/custom-component/RectShape/Component.vue";
 import LineShape from "@/custom-component/LineShape/Component.vue";
 import CircleShape from "@/custom-component/CircleShape/Component.vue";
+import SVGStar from "@/custom-component/svgShapes/SVGStar/Component.vue";
+import SVGTriangle from "@/custom-component/svgShapes/SVGTriangle/Component.vue";
 import Shape from "./Shape.vue";
-import { getShapeStyle, getStyle, getCanvasStyle } from "@/utils/style";
+import {
+  getShapeStyle,
+  getStyle,
+  getCanvasStyle,
+  getSVGStyle,
+} from "@/utils/style";
 import { onMounted, reactive, type CSSProperties } from "vue";
 import { changeStyleWithScale } from "@/utils/translate";
 
@@ -21,6 +29,9 @@ const COMPONENTS = {
   RectShape,
   LineShape,
   CircleShape,
+  SVGStar,
+  SVGTriangle,
+  VTable,
 };
 
 defineProps({
@@ -102,7 +113,17 @@ const handleInput = (element: any, value: string) => {
     >
       <component
         :is="(COMPONENTS as any)[item.component]"
-        v-if="item.component != 'VText'"
+        v-if="item.component.startsWith('SVG')"
+        :id="'component' + item.id"
+        :style="getSVGStyle(item.style, state.svgFilterAttrs)"
+        class="component"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+      />
+      <component
+        :is="(COMPONENTS as any)[item.component]"
+        v-else-if="item.component != 'VText'"
         :id="'component' + item.id"
         class="component"
         :style="getComponentStyle(item.style)"
