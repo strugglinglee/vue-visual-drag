@@ -22,14 +22,15 @@ const state = reactive<any>({
 });
 const canvasRef = ref(null);
 onMounted(() => {
-  //   state.canvas = canvasRef.value;
-  //   state.ctx = state.canvas.getContext("2d");
-  //   drawImage();
-});
-watch([props.element.style.width, props.element.style.height], () => {
+  state.canvas = canvasRef.value;
+  state.ctx = state.canvas.getContext("2d");
   drawImage();
 });
-watch([props.propValue.flip.vertical, props.propValue.flip.horizontal], () => {
+watch(props.element.style, () => {
+  drawImage();
+});
+watch(props.propValue.flip, (value) => {
+  console.log(value);
   mirrorFlip();
 });
 const drawImage = () => {
@@ -70,10 +71,9 @@ const mirrorFlip = () => {
 };
 </script>
 <template>
-  <!-- <div style="overflow: hidden">
+  <div style="overflow: hidden">
     <canvas ref="canvasRef"></canvas>
-  </div> -->
-  <div>222</div>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>
