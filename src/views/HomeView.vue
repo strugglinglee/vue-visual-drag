@@ -5,10 +5,12 @@ import componentList from "@/custom-component/component-list"; // 左侧列表�
 import { deepCopy } from "@/utils/utils";
 import Editor from "@/components/Editor/Index.vue";
 import { useComposeStore } from "@/stores/compose";
+import { useContextMenuStore } from "@/stores/contextMenu";
 import { useMainStore } from "@/stores/main";
 import generateID from "@/utils/generateID";
 
 const composeStore = useComposeStore();
+const contextMenuStore = useContextMenuStore();
 const mainStore = useMainStore();
 const handleDrop = (e: any) => {
   e.preventDefault();
@@ -57,12 +59,17 @@ const handleMouseDown = (e: MouseEvent) => {
   // this.$store.commit("setInEditorStatus", true);
 };
 
-const deselectCurComponent = (e: Event) => {
+const deselectCurComponent = (e: any) => {
   if (!mainStore.isInCurComponentArea) {
     mainStore.$patch({
       curComponent: null,
       curComponentIndex: null,
     });
+  }
+
+  // 0 左击 1 滚轮 2 右击
+  if (e.button != 2) {
+    contextMenuStore.hideContextMenu();
   }
 };
 </script>

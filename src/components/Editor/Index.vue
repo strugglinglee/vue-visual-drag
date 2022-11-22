@@ -3,6 +3,7 @@ import { useMainStore } from "@/stores/main";
 import { useComposeStore } from "@/stores/compose";
 import { $ } from "@/utils/utils";
 import Grid from "./Grid.vue";
+import ContextMenu from "./ContextMenu.vue";
 import VText from "@/custom-component/VText/Component.vue";
 import VButton from "@/custom-component/VButton/Component.vue";
 import VTable from "@/custom-component/VTable/Component.vue";
@@ -21,6 +22,8 @@ import {
 } from "@/utils/style";
 import { onMounted, reactive, type CSSProperties } from "vue";
 import { changeStyleWithScale } from "@/utils/translate";
+import { useContextMenuStore } from "@/stores/contextMenu";
+const contextMenuStore = useContextMenuStore();
 
 const COMPONENTS = {
   VText,
@@ -82,6 +85,26 @@ const handleInput = (element: any, value: string) => {
     height: getTextareaHeight(element, value),
   });
 };
+
+const handleContextMenu = (e: any) => {
+  e.stopPropagation();
+  e.preventDefault();
+
+  // 计算菜单相对于编辑器的位移
+  let target = e.target;
+  let top = e.offsetY;
+  let left = e.offsetX;
+  while (target instanceof SVGElement) {
+    target = target.parentNode;
+  }
+
+  while (!target.className.includes("editor")) {
+    left += target.offsetLeft;
+    top += target.offsetTop;
+    target = target.parentNode;
+  }
+  contextMenuStore.showContextMenu({ top, left });
+};
 </script>
 
 <template>
@@ -93,9 +116,11 @@ const handleInput = (element: any, value: string) => {
       width: changeStyleWithScale(mainStore.canvasStyleData.width) + 'px',
       height: changeStyleWithScale(mainStore.canvasStyleData.height) + 'px',
     }"
+    @contextmenu="handleContextMenu"
   >
     <!-- 网格线 -->
     <Grid />
+    <ContextMenu />
     <div
       v-for="(item, index) in mainStore.testPoints"
       :style="item"

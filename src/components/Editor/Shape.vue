@@ -7,6 +7,7 @@ import { ShapePointCursor, type ShapePonitType } from "@/types/shape";
 // import { mod360 } from "@/utils/translate";
 import { NORMAL_POINT_DIRECTION } from "@/constant/shape";
 import calculateComponentPositonAndSize from "@/utils/calculateComponentPositonAndSize";
+import { useContextMenuStore } from "@/stores/contextMenu";
 
 let currentEl = ref(null);
 
@@ -18,6 +19,7 @@ const props = defineProps<{
 }>();
 const mainStore = useMainStore();
 const composeStore = useComposeStore();
+const contextMenuStore = useContextMenuStore();
 
 // 获取八个点的坐标 只用top/right来定位
 const getShapeStyle = (direction: ShapePonitType) => {
@@ -46,7 +48,10 @@ const isActive = computed(() => {
   return props.active && !props.element.isLock;
 });
 
-const setCurComponent = () => {};
+const setCurComponent = () => {
+  // 阻止向父组件冒泡
+  contextMenuStore.hideContextMenu();
+};
 const handleMouseDownOnShape = (e: any) => {
   mainStore.$patch({
     curComponent: props.element,
@@ -191,7 +196,7 @@ const handleMouseDownOnPoint = (direction: any, e: any) => {
 <template>
   <div
     :class="['shape', { active }]"
-    @click="setCurComponent"
+    @click.stop.prevent="setCurComponent"
     @mousedown="handleMouseDownOnShape"
     ref="currentEl"
   >
